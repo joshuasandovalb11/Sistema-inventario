@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STOCKY</title>
+    <!-- Incluir Tailwind CSS desde CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563eb',
+                        'primary-dark': '#1e40af',
+                        'secondary': '#10b981',
+                        'accent': '#7c3aed'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome CDN para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+</head>
+
+<body class="bg-gray-50">
+    <!-- Barra de navegación -->
+    <nav class="bg-white shadow-md pr-10 pl-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                    <i class="fas fa-boxes text-primary text-2xl"></i>
+                    <span class="font-bold text-xl text-primary">STOCKY</span>
+                </a>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 text-gray-600">
+                <a href="#caracteristicas" class="hover:text-primary">Características</a>
+                <a href="#contacto" class="hover:text-primary">Contacto</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="{{ url_for('login') }}" class="hidden md:inline-block text-primary hover:text-primary-dark font-medium">Iniciar Sesión</a>
+                
+                <!-- Menú móvil -->
+                <button class="md:hidden text-gray-600 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white py-20 pr-10 pl-10">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0 pr-6">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4 leading-tight">
+                    <span class="text-primary">Control total</span> de tu inventario
+                </h1>
+                <p class="text-lg text-gray-600 mb-8 max-w-xl">Simplifica la gestión de tu inventario con nuestra plataforma intuitiva. Optimiza costos, evita pérdidas y toma decisiones basadas en datos.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="{{ url_for('login') }}" class="bg-primary hover:bg-primary-dark text-white text-center px-8 py-4 rounded-lg font-medium transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Iniciar Sesión</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 relative">
+                <div class="bg-white p-2 rounded-xl shadow-xl overflow-hidden">
+                    <img src="{{ url_for('static', filename='images/66371.jpg') }}" alt="Sistema de gestión de inventarios" class="w-full h-full rounded-lg">
+                </div>
+                <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-secondary bg-opacity-20 rounded-full"></div>
+                <div class="absolute -top-4 -right-4 w-16 h-16 bg-primary bg-opacity-20 rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Características -->
+    <section id="caracteristicas" class="py-16 bg-primary pr-10 pl-10">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white mb-4">Características principales</h2>
+                <p class="text-white max-w-2xl mx-auto">Descubre las herramientas que harán que la gestión de tu inventario sea más eficiente.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                    <div class="bg-primary bg-opacity-10 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+                        <i class="fas fa-barcode text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Control de stock</h3>
+                    <p class="text-gray-600">Seguimiento en tiempo real de tus productos. Establece alertas de nivel bajo de inventario y automatiza reordenes.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                    <div class="bg-primary bg-opacity-10 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Informes y análisis</h3>
+                    <p class="text-gray-600">Genera informes detallados y visualiza métricas clave para tomar decisiones inteligentes basadas en datos.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                    <div class="bg-primary bg-opacity-10 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+                        <i class="fas fa-qrcode text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Escaneo QR y códigos</h3>
+                    <p class="text-gray-600">Escanea códigos de barras y QR para una entrada rápida de productos y un seguimiento eficiente.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                    <div class="bg-primary bg-opacity-10 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Múltiples usuarios</h3>
+                    <p class="text-gray-600">Configura diferentes roles y permisos para tu equipo y mantén un control total sobre quién accede a qué.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                    <div class="bg-primary bg-opacity-10 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Acceso móvil</h3>
+                    <p class="text-gray-600">Gestiona tu inventario desde cualquier lugar con nuestra aplicación móvil intuitiva y responsive.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                    <div class="bg-primary bg-opacity-10 rounded-full w-14 h-14 flex items-center justify-center mb-4">
+                        <i class="fas fa-sync text-primary text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Integraciones</h3>
+                    <p class="text-gray-600">Conecta con tu ERP, software contable y plataformas de e-commerce para una gestión unificada.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 pr-10 pl-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-boxes text-blue-400 text-2xl"></i>
+                        <span class="font-bold text-xl">STOCKY</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Simplificando la gestión de inventario para empresas de todos los tamaños.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Producto</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Características</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Precios</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Demostraciones</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Guías</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Empresa</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Sobre nosotros</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Clientes</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div id="contacto">
+                    <h3 class="font-semibold text-lg mb-4">Contacto</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-map-marker-alt mt-1 text-gray-400"></i>
+                            <span class="text-gray-400">Av. Tecnológica 123, Ciudad de México</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-envelope mt-1 text-gray-400"></i>
+                            <span class="text-gray-400">info@invgest.com</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fas fa-phone mt-1 text-gray-400"></i>
+                            <span class="text-gray-400">+52 55 1234 5678</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">&copy; 2025 STOCKY. Todos los derechos reservados.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition duration-300">Términos de servicio</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition duration-300">Política de privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
