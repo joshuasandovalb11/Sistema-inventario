@@ -46,63 +46,38 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <!-- Fila de producto -->
+                        {% for i in prov%}
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">Jose</div>
+                                <div class="text-sm font-medium text-gray-900">{{i.nombre}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">Carne asada</div>
+                                <div class="text-sm text-gray-900">{{i.producto}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">6647099372</div>
+                                <div class="text-sm text-gray-900">{{i.numero}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">jose.eduardo@hotman.gob</div>
+                                <div class="text-sm text-gray-900">{{i.correo}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-green-600 hover:text-green-900 mr-3">Edit</a>
-                                <a href="#" class="text-red-600 hover:text-red-900">Eliminar</a>
+                                <button
+                                    data-modal-open="editar-{{ i.id }}"
+                                    class="text-green-600 hover:text-green-900 mr-3">
+                                    Editar
+                                </button> 
+                                <form action="{{ url_for('deleteProvider', provider_id=i.id) }}"
+                                    method="post"    
+                                    class="inline">
+                                    <button type="submit"
+                                            class="text-red-600 hover:text-red-900"
+                                            onclick="return confirm('¿Eliminar proveedor?');">
+                                        Eliminar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
-
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">Eduardo</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">Maruchan</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">6647099372</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">jose.eduardo@hotman.gob</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-green-600 hover:text-green-900 mr-3">Edit</a>
-                                <a href="#" class="text-red-600 hover:text-red-900">Eliminar</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">Joshua</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">Pollo</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">6648378908</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">jose.eduardo@hotman.gob</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-green-600 hover:text-green-900 mr-3">Edit</a>
-                                <a href="#" class="text-red-600 hover:text-red-900">Eliminar</a>
-                            </td>
-                        </tr>
-                        
+                        {% endfor %}
                         <!-- Puedes agregar más filas de productos aquí -->
                     </tbody>
                 </table>
@@ -175,25 +150,20 @@
                 </div>
                 
                 <!-- Formulario -->
-                <form>
+                <form action="/addProvider" method="POST">
                     <div class="mb-4">
                         <label for="nombre-producto" class="block text-sm font-medium text-gray-700 mb-1">Nombre del proveedor</label>
-                        <input type="text" id="nombre-producto" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el nombre del proovedor">
+                        <input type="text" id="nombreProveedor" name="nombreProveedor" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el nombre del proovedor">
                     </div>
-                    
+
                     <div class="mb-4">
-                        <label for="id-producto" class="block text-sm font-medium text-gray-700 mb-1">Producto</label>
-                        <input type="text" id="id-producto" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el nombre del producto">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="precio-compra" class="block text-sm font-medium text-gray-700 mb-1">Numero de contacto</label>
-                        <input type="text" id="precio-compra" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el numero de contacto">
+                        <label for="numeroContacto" class="block text-sm font-medium text-gray-700 mb-1">Numero de contacto</label>
+                        <input type="text" id="numeroContacto" name="numeroContacto" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el numero de contacto">
                     </div>
                     
                     <div class="mb-4"> 
-                        <label for="cantidad-paquete" class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
-                        <input type="text" id="cantidad-paquete" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el correo">
+                        <label for="correoProveedor" class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                        <input type="email" id="correoProveedor" name="correoProveedor" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el correo">
                     </div>         
                     
                     <div class="flex justify-end space-x-2">
@@ -204,6 +174,75 @@
             </div>
         </div>
     </div>
+    {% for p in prov %}
+    <div id="editar-{{ p.id }}" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
+       <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-center mb-6">Nuevo Proveedor</h3>
+                
+                <!-- Subir imagen -->
+                <div class="mb-6 flex flex-col items-center">
+                    <div class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-2">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-400">Arrastre la imagen aquí</p>
+                            <p class="text-sm text-gray-400">o</p>
+                            <button class="text-primary text-sm">Buscar imagen</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Formulario -->
+                <form action="/editProvider" method="POST">
+                    <input type="hidden" name="editProviderId" value="{{ p.id }}">
+                    <div class="mb-4">
+                        <label for="editNombreProveedor" class="block text-sm font-medium text-gray-700 mb-1">Nombre del proveedor</label>
+                        <input type="text" id="editNombreProveedor" name="editNombreProveedor" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el nombre del proovedor" value="{{ p.nombre }}">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="editNumeroContacto" class="block text-sm font-medium text-gray-700 mb-1">Numero de contacto</label>
+                        <input type="text" id="editNumeroContacto" name="editNumeroContacto" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el numero de contacto" value="{{ p.numero }}">
+                    </div>
+                    
+                    <div class="mb-4"> 
+                        <label for="editCorreoProveedor" class="block text-sm font-medium text-gray-700 mb-1">Correo</label>
+                        <input type="email" id="editCorreoProveedor" name="editCorreoProveedor" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el correo" value="{{ p.correo }}">
+                    </div>         
+                    
+                    <div class="flex justify-end space-x-2">
+                        <button data-modal-close type="button" class="bg-red-600 hover:bg-red-700 rounded-full text-white px-4 py-2 mt-4"> Descartar</button>
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 rounded-full text-white px-4 py-2 mt-4">Editar Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+     <script>
+        document.addEventListener('click', e => {
+        //Abrir
+        const opener = e.target.closest('[data-modal-open]');
+        if (opener) {
+            const id    = opener.dataset.modalOpen;       
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('hidden');
+            return;                                       
+        }
+
+        //Cerrar con boton
+        const closer = e.target.closest('[data-modal-close]');
+        if (closer) {
+            closer.closest('[id]').classList.add('hidden');
+            return;
+        }
+
+        //Cerrar con click en fondo
+        if (e.target.classList.contains('bg-black/50')) {
+            e.target.classList.add('hidden');
+        }
+        });
+    </script>
     
     <!-- JavaScript para manejar el modal -->
     <script>

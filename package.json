@@ -27,6 +27,7 @@
     "normalize-range": "^0.1.2",
     "picocolors": "^1.1.1",
     "postcss-value-parser": "^4.2.0",
+    "sistema-inventario": "file:",
     "source-map-js": "^1.2.1",
     "update-browserslist-db": "^1.1.3"
   }
