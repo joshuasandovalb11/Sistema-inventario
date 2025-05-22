@@ -133,22 +133,92 @@ def dashboard():
 
 @app.route('/pages/<path:page_name>')
 def serve_pages(page_name):
-    prov = get_providers()
-    productos = get_products()
-    low = get_product_low()
-    sales = get_sales()
-    if page_name == 'proveedores.html':
-        # Aquí puedes pasar los proveedores a la plantilla
-        print("Estas en proveedores")
+    # Obtener parámetro de página de la URL
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Número de elementos por página
+    
+    if page_name == 'inventario.html':
+        # Obtener productos paginados
+        pagination_data = get_products(page, per_page)
+        productos = pagination_data["products"]
+        pagination = {
+            "page": pagination_data["current_page"],
+            "pages": pagination_data["pages"],
+            "has_prev": pagination_data["has_prev"],
+            "has_next": pagination_data["has_next"],
+            "total": pagination_data["total"]
+        }
+        prov = get_all_providers()
+        low = get_product_low()
+        sales = []
+        
+    elif page_name == 'proveedores.html':
+        # Obtener proveedores paginados
+        pagination_data = get_providers(page, per_page)
+        prov = pagination_data["providers"]
+        pagination = {
+            "page": pagination_data["current_page"],
+            "pages": pagination_data["pages"],
+            "has_prev": pagination_data["has_prev"],
+            "has_next": pagination_data["has_next"],
+            "total": pagination_data["total"]
+        }
+        productos = []
+        low = 0
+        sales = []
+        
+    elif page_name == 'ventas.html':
+        # Obtener ventas paginadas
+        pagination_data = get_sales(page, per_page)
+        sales = pagination_data["sales"]
+        pagination = {
+            "page": pagination_data["current_page"],
+            "pages": pagination_data["pages"],
+            "has_prev": pagination_data["has_prev"],
+            "has_next": pagination_data["has_next"],
+            "total": pagination_data["total"]
+        }
+        productos = []
+        prov = []
+        low = 0
+        
+    else:
+        # Para otras páginas, usar datos no paginados
+        pagination_data = get_providers()
+        prov = pagination_data["providers"] if isinstance(pagination_data, dict) else []
+        
+        productos_data = get_products()
+        productos = productos_data["products"] if isinstance(productos_data, dict) else []
+        
+        low = get_product_low()
+        
+        sales_data = get_sales()
+        sales = sales_data["sales"] if isinstance(sales_data, dict) else []
+        
+        pagination = {"page": 1, "pages": 1, "has_prev": False, "has_next": False, "total": 0}
 
-    return render_template(f'pages/{page_name}', prov=prov, productos=productos, low=low, sales=sales)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template(f'pages/{page_name}', 
+                             prov=prov, 
+                             productos=productos, 
+                             low=low, 
+                             sales=sales,
+                             pagination=pagination,
+                             current_page_name=page_name)
+
+    return render_template(f'pages/{page_name}', 
+                         prov=prov, 
+                         productos=productos, 
+                         low=low, 
+                         sales=sales,
+                         pagination=pagination,
+                         current_page_name=page_name)
 
 @app.route('/logout')
 def logout():
-    # Eliminar información de la sesión
-    session.pop('logged_in', None)
-    session.pop('user_email', None)
-    return redirect(url_for('login'))
+    # Limpiar la sesión y redirigir al login
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

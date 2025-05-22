@@ -38,31 +38,31 @@
             <!-- Primer menú con grow -->
             <ul class="space-y-2 flex-grow">
                 <li>
-                    <a href="#" class="flex items-center p-2 text-primary rounded-md hover:bg-gray-100" data-page="dashboard">
+                    <a href="#" class="flex items-center p-2 text-primary rounded-md hover:scale-105 hover:bg-blue-50" data-page="dashboard">
                         <i class="fas fa-home mr-3"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-100" data-page="inventario">
+                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:scale-105 hover:bg-blue-50" data-page="inventario">
                         <i class="fas fa-boxes-stacked mr-3"></i>
                         <span>Inventario</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-100" data-page="reporte">
+                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:scale-105 hover:bg-blue-50" data-page="reporte">
                         <i class="fas fa-chart-bar mr-3"></i>
                         <span>Reporte</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-100" data-page="proveedores">
+                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:scale-105 hover:bg-blue-50" data-page="proveedores">
                         <i class="fas fa-truck mr-3"></i>
                         <span>Proveedores</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-100" data-page="ventas">
+                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:scale-105 hover:bg-blue-50" data-page="ventas">
                         <i class="fas fa-shopping-cart mr-3"></i>
                         <span>Ventas</span>
                     </a>
@@ -72,13 +72,7 @@
             <!-- Segundo menú fijo en la parte baja -->
             <ul class="space-y-2 pt-4 border-t border-gray-200">
                 <li>
-                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-100" data-page="ajustes">
-                        <i class="fas fa-cog mr-3"></i>
-                        <span>Ajustes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center p-2 text-gray-600 rounded-md hover:bg-gray-100">
+                    <a href="{{ url_for('logout') }}" class="flex items-center p-2 text-gray-600 rounded-md hover:scale-105 hover:bg-blue-50">
                         <i class="fas fa-sign-out-alt mr-3"></i>
                         <span>Cerrar sesión</span>
                     </a>
