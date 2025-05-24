@@ -8,7 +8,7 @@
             <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-blue-50">
                 <div class="text-blue-500 font-semibold">Ventas Totales</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">868</div>
+                    <div class="text-2xl font-bold">{{ cantidad | sum }}</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Últimos 7 días</div>
@@ -17,7 +17,7 @@
             <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-orange-50">
                 <div class="text-orange-500 font-semibold">Total recibido</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">$20983</div>
+                    <div class="text-2xl font-bold">${{total | sum}}</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Últimos 7 días</div>

@@ -1,7 +1,7 @@
 <body class="bg-gray-50">
     <div id="inventario-content" class="p-4 md:p-6">
         <h1 class="text-2xl font-bold mb-6">Vision General</h1>
-        
+
         <!-- Resumen del inventario -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <!-- Total productos -->
@@ -40,56 +40,19 @@
                 </div>
             </div>
             <div class="p-4">
-                <div class="h-64 w-full">
-                    <!-- Placeholder para el gráfico -->
-                    <div class="w-full h-full bg-gray-50 rounded-md flex items-center justify-center">
-                        <!-- Simulación básica del gráfico -->
-                        <div class="w-full h-full px-2 pt-4 pb-0 flex items-end">
-                            <div class="flex-1 flex items-end space-x-2">
-                                <!-- Columnas del gráfico (solo diseño, no funcionales) -->
-                                <div class="w-4 bg-blue-400 h-36 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-28 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-28 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-32 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-40 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-36 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-24 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-32 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-32 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-28 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-20 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-28 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-36 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-24 rounded-t-sm"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center mt-2 text-xs text-gray-500">
-                        <div class="flex items-center mr-4">
-                            <div class="w-3 h-3 bg-blue-400 rounded-full mr-1"></div>
-                            <span>Compras</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-green-400 rounded-full mr-1"></div>
-                            <span>Ventas</span>
+                <div class="h-80 w-full"> <!-- altura fija -->
+                    <div class="bg-white rounded-xl shadow-md p-6 w-full h-full">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">
+                            Ventas de los últimos 7 días
+                        </h2>
+                        <div class="w-full h-full">
+                            <canvas id="ventasChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Listado de productos -->
         <div class="bg-white rounded-lg shadow mb-6">
             <div class="p-4 border-b border-gray-200 flex justify-between items-center">
@@ -106,25 +69,30 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Tabla de productos -->
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Producto
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Valor de Venta
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Cantidad Vendida
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 ID de Venta
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Fecha de Venta
                             </th>
                         </tr>
@@ -183,20 +151,22 @@
                                 <div class="text-sm text-gray-900">25/08/24</div>
                             </td>
                         </tr>
-                        
-                        
+
+
                         <!-- Puedes agregar más filas de productos aquí -->
                     </tbody>
                 </table>
             </div>
-            
+
             <!-- Paginación -->
             <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
                 <div class="flex-1 flex justify-between sm:hidden">
-                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <a href="#"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                         Anterior
                     </a>
-                    <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <a href="#"
+                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                         Siguiente
                     </a>
                 </div>
@@ -208,27 +178,34 @@
                     </div>
                     <div>
                         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <a href="#"
+                                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                 <span class="sr-only">Anterior</span>
                                 <i class="fas fa-chevron-left text-xs"></i>
                             </a>
                             <!-- Páginas -->
-                            <a href="#" aria-current="page" class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
+                            <a href="#" aria-current="page"
+                                class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
                                 1
                             </a>
-                            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                            <a href="#"
+                                class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                                 2
                             </a>
-                            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                            <a href="#"
+                                class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                                 3
                             </a>
-                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                            <span
+                                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
                                 ...
                             </span>
-                            <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                            <a href="#"
+                                class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                                 10
                             </a>
-                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <a href="#"
+                                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                 <span class="sr-only">Siguiente</span>
                                 <i class="fas fa-chevron-right text-xs"></i>
                             </a>
@@ -238,28 +215,74 @@
             </div>
         </div>
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- JavaScript para manejar el modal -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializa el gráfico ventas
+            initializeChart();
+
+            // Código modal (si tienes)
             const btnAgregar = document.getElementById('btn-agregar-producto');
             const modal = document.getElementById('modal-agregar-producto');
             const btnDescartar = document.getElementById('btn-descartar');
-            
-            btnAgregar.addEventListener('click', function() {
-                modal.classList.remove('hidden');
-            });
-            
-            btnDescartar.addEventListener('click', function() {
-                modal.classList.add('hidden');
-            });
-            
-            // Cerrar modal al hacer clic fuera
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
+
+            if (btnAgregar && modal && btnDescartar) {
+                btnAgregar.addEventListener('click', function () {
+                    modal.classList.remove('hidden');
+                });
+
+                btnDescartar.addEventListener('click', function () {
                     modal.classList.add('hidden');
-                }
-            });
+                });
+
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function () {
+            // Variables locales dentro de esta función anónima autoejecutable
+            const labels = {{ label | default ([]) | tojson
+        }};
+        const data = {{ total | default ([]) | tojson }};
+
+        const config = {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ventas Totales (últimos 7 días)',
+                    data: data,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const ctx = document.getElementById('ventasChart').getContext('2d');
+        new Chart(ctx, config);
+  }) ();
+    </script>
+
+
+
 </body>

@@ -8,8 +8,8 @@
             <div class="bg-white rounded-lg shadow p-4 hover:scale-105 hover:bg-blue-50">
                 <div class="text-blue-500 font-semibold">Ventas</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">832</div>
-                    <div class="text-lg font-semibold text-gray-800">$832</div>
+                    <div class="text-2xl font-bold">{{ cantidad | sum }}</div>
+                    <div class="text-lg font-semibold text-gray-800">${{total | sum}}</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Últimos 7 días</div>
@@ -21,25 +21,10 @@
             <div class="bg-white rounded-lg shadow p-4 hover:scale-105 hover:bg-purple-50">
                 <div class="text-purple-500 font-semibold">Ingresos</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">$18,300</div>
-                    <div class="text-lg font-semibold text-gray-800">100%</div>
+                    <div class="text-2xl font-bold">${{total | sum}}</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Últimos 7 días</div>
-                    <div>Porcentaje</div>
-                </div>
-            </div>
-            
-            <!-- Card Coste -->
-            <div class="bg-white rounded-lg shadow p-4 hover:scale-105 hover:bg-green-50">
-                <div class="text-green-500 font-semibold">Coste</div>
-                <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">$17,432</div>
-                    <div class="text-lg font-semibold text-gray-800">95%</div>
-                </div>
-                <div class="flex justify-between text-xs text-gray-500">
-                    <div>Últimos 7 días</div>
-                    <div>Porcentaje</div>
                 </div>
             </div>
         </div>
@@ -56,51 +41,10 @@
                 </div>
             </div>
             <div class="p-4">
-                <div class="h-64 w-full">
-                    <!-- Placeholder para el gráfico -->
-                    <div class="w-full h-full bg-gray-50 rounded-md flex items-center justify-center">
-                        <!-- Simulación básica del gráfico -->
-                        <div class="w-full h-full px-2 pt-4 pb-0 flex items-end">
-                            <div class="flex-1 flex items-end space-x-2">
-                                <!-- Columnas del gráfico (solo diseño, no funcionales) -->
-                                <div class="w-4 bg-blue-400 h-36 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-28 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-28 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-32 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-40 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-36 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-24 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-32 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-32 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-28 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-20 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-28 rounded-t-sm"></div>
-                            </div>
-                            <div class="flex-1 flex items-end space-x-2">
-                                <div class="w-4 bg-blue-400 h-36 rounded-t-sm"></div>
-                                <div class="w-4 bg-green-400 h-24 rounded-t-sm"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center mt-2 text-xs text-gray-500">
-                        <div class="flex items-center mr-4">
-                            <div class="w-3 h-3 bg-blue-400 rounded-full mr-1"></div>
-                            <span>Compras</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-green-400 rounded-full mr-1"></div>
-                            <span>Ventas</span>
-                        </div>
+                <div class="bg-white rounded-xl shadow-md p-6 w-full h-full">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Ventas de los últimos 7 días</h2>
+                    <div class="w-full h-80">
+                        <canvas id="ventasChart" class="w-full h-full"></canvas>
                     </div>
                 </div>
             </div>
@@ -117,13 +61,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="text-blue-500 font-semibold">Compra</div>
-                            <div class="text-2xl font-bold mt-1">82</div>
-                            <div class="text-xs text-gray-500">Últimos 7 días</div>
+                            <div class="text-2xl font-bold mt-1">{{productos | length}}</div>
                         </div>
                         <div>
                             <div class="text-green-500 font-semibold">Coste</div>
-                            <div class="text-2xl font-bold mt-1">$13,573</div>
-                            <div class="text-xs text-gray-500">Últimos 7 días</div>
+                            <div class="text-2xl font-bold mt-1">${{cost}}</div>
                         </div>
                     </div>
                 </div>
@@ -138,12 +80,12 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="text-blue-500 font-semibold">Número de proveedores</div>
-                            <div class="text-2xl font-bold mt-1">31</div>
+                            <div class="text-2xl font-bold mt-1">{{prov | length}}</div>
                             <div class="text-xs text-gray-500">Total</div>
                         </div>
                         <div>
                             <div class="text-purple-500 font-semibold">Número de productos</div>
-                            <div class="text-2xl font-bold mt-1">21</div>
+                            <div class="text-2xl font-bold mt-1">{{productos | length}}</div>
                             <div class="text-xs text-gray-500">Total</div>
                         </div>
                     </div>
@@ -231,46 +173,20 @@
                 </div>
                 <div class="divide-y divide-gray-200">
                     <!-- Item -->
+                    {% for pl in productLow %}
                     <div class="p-4 flex justify-between items-center">
                         <div class="flex items-center">
                             <div class="w-12 h-12 mr-4">
                                 <img src="/api/placeholder/48/48" alt="Tata Salt" class="w-full h-full object-cover rounded">
                             </div>
                             <div>
-                                <h3 class="font-medium">Tata Salt</h3>
-                                <p class="text-sm text-gray-500">Cantidad restante: 10 paquetes</p>
+                                <h3 class="font-medium">{{pl.product}}</h3>
+                                <p class="text-sm text-gray-500">Cantidad restante: {{pl.quantity}} paquetes</p>
                             </div>
                         </div>
-                        <span class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-md">Bajo</span>
+                        <span class="animate-bounce px-2 py-1 bg-red-100 text-red-600 text-xs rounded-md">Bajo</span>
                     </div>
-                    
-                    <!-- Item -->
-                    <div class="p-4 flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 mr-4">
-                                <img src="/api/placeholder/48/48" alt="Lays" class="w-full h-full object-cover rounded">
-                            </div>
-                            <div>
-                                <h3 class="font-medium">Lays</h3>
-                                <p class="text-sm text-gray-500">Cantidad restante: 15 paquetes</p>
-                            </div>
-                        </div>
-                        <span class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-md">Bajo</span>
-                    </div>
-                    
-                    <!-- Item -->
-                    <div class="p-4 flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 mr-4">
-                                <img src="/api/placeholder/48/48" alt="Lays" class="w-full h-full object-cover rounded">
-                            </div>
-                            <div>
-                                <h3 class="font-medium">Lays</h3>
-                                <p class="text-sm text-gray-500">Cantidad restante: 15 paquetes</p>
-                            </div>
-                        </div>
-                        <span class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-md">Bajo</span>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -282,4 +198,54 @@
         // Aquí puedes inicializar componentes específicos del dashboard
         // Por ejemplo, inicializar gráficos, cargar datos específicos, etc.
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script>
+function initializeChart() {
+    const canvas = document.getElementById('ventasChart');
+    if (!canvas) {
+        console.warn('initializeChart: No se encontró el canvas con ID ventasChart');
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    // Asegúrate de tener las variables globales disponibles
+    const labels = {{ label | default([]) | tojson }};
+    const data = {{ total | default([]) | tojson }};
+
+    // Destruye el gráfico anterior si ya existe
+    if (window.ventasChartInstance) {
+        window.ventasChartInstance.destroy();
+    }
+
+    // Configura el gráfico
+    const config = {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Ventas Totales (últimos 7 días)',
+                data: data,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    window.ventasChartInstance = new Chart(ctx, config);
+}
+</script>
+
 </body>

@@ -1,6 +1,6 @@
 import psycopg2
 from app.static.db.connection import get_db_connection, close_db_connection
-from datetime import date
+from datetime import date, timedelta, datetime
 
 def add_provider(provider_name, provider_email, provider_phone):
     conn, cur = get_db_connection()
@@ -44,10 +44,11 @@ def get_providers(page=1, per_page=10):
                     pr."idProveedor"   AS id,
                     pr.numero,
                     pr.correo,
-                    p.nombre           AS producto
+                    ARRAY_AGG(p.nombre)           AS producto
                 FROM proveedores AS pr
                 LEFT JOIN productos   AS p
                     ON p."idProveedor" = pr."idProveedor"
+                GROUP BY pr."idProveedor", pr.nombre, pr.correo, pr.numero
                 ORDER BY pr."idProveedor"
                 LIMIT %s OFFSET %s
             """, (per_page, offset))
@@ -97,6 +98,32 @@ def get_all_providers():
             
         except Exception as e:
             print("Error al obtener todos los proveedores:", e)
+            return []
+        finally:
+            close_db_connection(conn, cur)
+
+def get_all_products():
+    """Obtiene todos los productos sin paginación para usar en formularios"""
+    conn, cur = get_db_connection()
+    if conn is None:
+        return []
+    else:
+        try:
+            cur.execute("""
+                SELECT "idProducto", nombre, "precioCompra", "precioVenta", cantidad, "cantidadUnidad"
+                FROM productos
+                ORDER BY nombre
+            """)
+            
+            products = cur.fetchall()
+            product_list = [{"id": row[0], "nombre": row[1], "precioCompra": row[2], 
+                           "precioVenta": row[3], "cantidad": row[4], "cantidadUnidad":row[5]} 
+                          for row in products]
+            
+            return product_list
+            
+        except Exception as e:
+            print("Error al obtener todos los productos:", e)
             return []
         finally:
             close_db_connection(conn, cur)
@@ -338,5 +365,121 @@ def get_sales(page=1, per_page=10):
         except Exception as e:
             print("Error al obtener ventas paginadas:", e)
             return {"sales": [], "total": 0, "pages": 0}, 500
+        finally:
+            close_db_connection(conn, cur)
+
+def get_max_sell():
+    conn, cur = get_db_connection()
+    if conn is None:
+        return "Error al conectar a la base de datos", 500
+    else:
+        try:
+            # Obtener el producto más vendido
+            cur.execute("""
+                SELECT p.nombre, SUM(dv.cantidad) AS total_vendido
+                FROM "detalleVenta" AS dv
+                JOIN ventas AS v ON dv."idVenta" = v."idVenta"
+                JOIN productos AS p ON dv."idProducto" = p."idProducto"
+                WHERE v.fecha >= CURRENT_DATE - INTERVAL '7 days'
+                GROUP BY p.nombre
+                ORDER BY total_vendido DESC
+                LIMIT 1
+            """)
+            
+            result = cur.fetchone()
+            if result:
+                product_name, total_sold = result
+                return {"product": product_name, "total_sold": total_sold}
+            else:
+                return {"product": None, "total_sold": 0}
+            
+        except Exception as e:
+            print("Error al obtener el producto más vendido:", e)
+            return {"product": None, "total_sold": 0}, 500
+        finally:
+            close_db_connection(conn, cur)
+
+def get_sells_information():
+    conn, cur = get_db_connection()
+    if conn is None:
+        return "Error al conectar a la base de datos", 500
+    else:
+        try:
+            # Paso 1: generar fechas de los últimos 7 días
+            today = datetime.today().date()
+            last_7_days = [(today - timedelta(days=i)) for i in reversed(range(7))]
+            formatted_days = [day.strftime('%Y-%m-%d') for day in last_7_days]
+
+            # Paso 2: obtener ventas agrupadas por fecha (solo días con ventas)
+            cur.execute("""
+                SELECT v.fecha, SUM(v.total) AS total_vendido, SUM(cantidad) AS cantidad_vendida
+                FROM ventas AS v
+                JOIN "detalleVenta" AS dv ON v."idVenta" = dv."idVenta"
+                WHERE fecha >= CURRENT_DATE - INTERVAL '7 days'
+                GROUP BY fecha
+                ORDER BY fecha
+            """)
+            rows = cur.fetchall()
+
+            # Paso 3: convertir a diccionario para fácil acceso
+            ventas_dict = {row[0].strftime('%Y-%m-%d'): int(row[1]) for row in rows}
+
+            # Paso 4: construir listas completas con 0 donde no hubo ventas
+            totals = [ventas_dict.get(fecha, 0) for fecha in formatted_days]
+            cantidades_dict = {row[0].strftime('%Y-%m-%d'): int(row[2]) for row in rows}
+
+            cantidades = [cantidades_dict.get(fecha, 0) for fecha in formatted_days]
+
+
+            return {"labels": formatted_days, "totals": totals, "cantidad":cantidades}
+
+        except Exception as e:
+            print("Error al obtener la información de ventas:", e)
+            return {"labels": [], "totals": [], "cantidad":[]}, 500
+        finally:
+            close_db_connection(conn, cur)
+
+def get_info_low():
+    conn, cur = get_db_connection()
+    if conn is None:
+        return "Error al conectar a la base de datos", 500
+    else:
+        try:
+            # Obtener el producto más vendido
+            cur.execute("""
+                SELECT p.nombre, p.cantidad
+                FROM productos AS p
+                WHERE p.cantidad <= 4
+                ORDER BY p.cantidad ASC
+                LIMIT 3
+            """)
+            
+            result = cur.fetchall()
+            if result:
+                return [{"product": row[0], "quantity": row[1]} for row in result]
+            else:
+                return {"product": None, "quantity": 0}
+            
+        except Exception as e:
+            print("Error al obtener el producto más vendido:", e)
+            return {"product": None, "quantity": 0}, 500
+        finally:
+            close_db_connection(conn, cur)
+
+def sum_costs():
+    conn, cur = get_db_connection()
+    if conn is None:
+        return 0  # O podrías lanzar una excepción si prefieres
+    else:
+        try:
+            cur.execute("""
+                SELECT SUM("precioCompra" * cantidad) AS total
+                FROM productos
+            """)
+            result = cur.fetchone()
+            return result[0] if result[0] is not None else 0
+        except Exception as e:
+            print("Error al calcular el costo total:", e)
+            return 0
         finally:
             close_db_connection(conn, cur)

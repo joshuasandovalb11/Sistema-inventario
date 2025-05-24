@@ -128,15 +128,48 @@ def dashboard():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     
+    info = get_sells_information()
+    prov = get_all_providers()
+    productos = get_all_products()
+    productLow = get_info_low()
+    total = info["totals"]
+    cantidad = info["cantidad"]
     # Si está logueado, mostrar el dashboard
-    return render_template('dashboard.html', content_template='pages/dashboard-content.html')
+    return render_template(
+        'dashboard.html',
+        content_template='pages/dashboard-content.html',
+        label=info["labels"],
+        total=info["totals"],
+        productos=productos,
+        prov=prov,
+        productLow = productLow,
+        cost = sum_costs(),
+        cantidad=info["cantidad"]
+    )
 
 @app.route('/pages/<path:page_name>')
 def serve_pages(page_name):
+    print(f"page_name: {page_name}")
     # Obtener parámetro de página de la URL
     page = request.args.get('page', 1, type=int)
     per_page = 5  # Número de elementos por página
-    
+
+    max = get_max_sell()    
+    label = []
+    total = []
+    cantidad = []
+
+    if page_name == 'dashboard-content.html':
+        info = get_sells_information()
+        label = info.get("labels", [])
+        total = info.get("totals", [])
+        cantidad = info.get("cantidad", [])
+        prov = get_all_providers()
+        productos = get_all_products()
+        productLow = get_info_low()
+        cost = sum_costs()
+        
+
     if page_name == 'inventario.html':
         # Obtener productos paginados
         pagination_data = get_products(page, per_page)
@@ -151,7 +184,23 @@ def serve_pages(page_name):
         prov = get_all_providers()
         low = get_product_low()
         sales = []
-        
+        productLow = []
+        cost = sum_costs()
+
+    elif page_name == 'reporte.html':
+        prov = get_all_providers()
+        info = get_sells_information()
+        label = info.get("labels", [])
+        total = info.get("totals", [])
+        cantidad = info.get("cantidad", [])
+        productos = []
+        low = 0
+        sales = []
+        productLow = []
+        cost = 0;
+        pagination = {"page": 1, "pages": 1, "has_prev": False, "has_next": False, "total": 0}  # <- esto faltaba
+
+    
     elif page_name == 'proveedores.html':
         # Obtener proveedores paginados
         pagination_data = get_providers(page, per_page)
@@ -166,6 +215,8 @@ def serve_pages(page_name):
         productos = []
         low = 0
         sales = []
+        productLow = []
+        cost = 0;
         
     elif page_name == 'ventas.html':
         # Obtener ventas paginadas
@@ -178,9 +229,15 @@ def serve_pages(page_name):
             "has_next": pagination_data["has_next"],
             "total": pagination_data["total"]
         }
-        productos = []
+        productos = get_all_products()
         prov = []
         low = 0
+        info = get_sells_information()
+        label = info.get("labels", [])
+        total = info.get("totals", [])
+        cantidad = info.get("cantidad",[])
+        productLow = []
+        cost = 0;
         
     else:
         # Para otras páginas, usar datos no paginados
@@ -191,19 +248,24 @@ def serve_pages(page_name):
         productos = productos_data["products"] if isinstance(productos_data, dict) else []
         
         low = get_product_low()
-        
+        productLow = get_info_low()
         sales_data = get_sales()
         sales = sales_data["sales"] if isinstance(sales_data, dict) else []
-        
         pagination = {"page": 1, "pages": 1, "has_prev": False, "has_next": False, "total": 0}
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render_template(f'pages/{page_name}', 
                              prov=prov, 
                              productos=productos, 
-                             low=low, 
+                             low=low,
+                             max_sell=max, 
                              sales=sales,
                              pagination=pagination,
+                             label=label,
+                             total=total,
+                             cost=cost,
+                             cantidad=cantidad,
+                             productLow=productLow,
                              current_page_name=page_name)
 
     return render_template(f'pages/{page_name}', 
@@ -211,7 +273,13 @@ def serve_pages(page_name):
                          productos=productos, 
                          low=low, 
                          sales=sales,
+                         max_sell=get_max_sell,
                          pagination=pagination,
+                         label=label,
+                         total=total,
+                         cost=cost,
+                         cantidad = cantidad,
+                         productLow=productLow,
                          current_page_name=page_name)
 
 @app.route('/logout')

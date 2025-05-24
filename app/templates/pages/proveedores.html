@@ -44,13 +44,20 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <!-- Fila de producto -->
-                        {% for i in prov%}
+                        {% for i in prov %}
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{i.nombre}}</div>
                             </td>
+                            
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{i.producto}}</div>
+                                <div class="text-sm text-gray-900">
+                                    <button
+                                        data-modal-open="modal-ver-producto{{ i.id }}"
+                                        class="text-green-600 hover:text-green-900 mr-3">
+                                        Ver
+                                    </button> 
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{i.numero}}</div>
@@ -206,6 +213,7 @@
             </div>
         </div>
     </div>
+    
     {% for p in prov %}
     <div id="editar-{{ p.id }}" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -233,6 +241,21 @@
                     <div class="flex justify-end space-x-2">
                         <button data-modal-close type="button" class="bg-red-600 hover:bg-red-700 rounded-full text-white px-4 py-2 mt-4"> Descartar</button>
                         <button type="submit" class="bg-green-600 hover:bg-green-700 rounded-full text-white px-4 py-2 mt-4">Editar Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<div id="modal-ver-producto{{ p.id }}" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-center mb-6">Nuevo Proveedor</h3>
+                {% for i in p.producto %}
+                <p>{{i}}</p>
+                {% endfor %}
+                    <div class="flex justify-end space-x-2">
+                        <button data-modal-close type="button" class="bg-red-600 hover:bg-red-700 rounded-full text-white px-4 py-2 mt-4"> Descartar</button>
                     </div>
                 </form>
             </div>

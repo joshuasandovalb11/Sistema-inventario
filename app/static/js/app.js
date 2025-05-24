@@ -192,19 +192,29 @@ function addPaginationAttributes() {
     });
 }
 
-// Función para cargar contenido (versión original mejorada)
+// FUNCIÓN PRINCIPAL PARA CARGAR CONTENIDO - SOLO UNA VERSIÓN
 async function loadContent(pageName, pageNumber = 1) {
+    console.log(`loadContent llamado con: ${pageName}, página: ${pageNumber}`);
+    console.log(`Estado actual: currentPage=${currentPage}, currentPageNumber=${currentPageNumber}`);
+    
     // Si estamos cargando la misma página sin paginación, usar paginación
     if (pageName === currentPage && pageNumber !== currentPageNumber) {
         return loadPageWithPagination(pageName, pageNumber);
     }
     
-    // No recargamos si ya estamos en la página y es la misma página de paginación
-    if (pageName === currentPage && pageNumber === currentPageNumber && contentArea.innerHTML !== '') {
+    // CONDICIÓN CORREGIDA: Solo evitar recarga si es exactamente la misma página Y ya hay contenido Y no es recarga inicial
+    if (pageName === currentPage && 
+        pageNumber === currentPageNumber && 
+        contentArea.innerHTML !== '' && 
+        !contentArea.innerHTML.includes('loading-indicator') &&
+        !window.location.hash.includes(pageName)) {
+        console.log('Contenido ya cargado, no recargando');
         return;
     }
 
     try {
+        console.log('Iniciando carga de contenido...');
+        
         // Mostrar indicador de carga
         contentArea.innerHTML = '';
         loadingIndicator.classList.remove('hidden');
@@ -227,6 +237,8 @@ async function loadContent(pageName, pageNumber = 1) {
         // Construir URL con parámetros de paginación
         const url = pageNumber > 1 ? `${pages[pageName]}?page=${pageNumber}` : pages[pageName];
         
+        console.log('Cargando URL:', url);
+        
         // Cargar el contenido
         const response = await fetch(url, {
             headers: {
@@ -245,6 +257,8 @@ async function loadContent(pageName, pageNumber = 1) {
         
         // Insertar el nuevo contenido
         contentArea.innerHTML = html;
+        
+        console.log(`Contenido de ${pageName} cargado exitosamente`);
 
         // Ejecutar cualquier script que venga en el contenido
         executeScripts(contentArea);
@@ -252,6 +266,14 @@ async function loadContent(pageName, pageNumber = 1) {
         // Inicializar los modales y paginación después de cargar el contenido
         initializeModals();
         addPaginationAttributes();
+        
+        // Inicializar gráfico solo si estamos en dashboard
+        if (pageName === 'dashboard') {
+            console.log('Iniciando gráfico para dashboard');
+            waitForElementVisible('#ventasChart', () => {
+                initializeChart();
+            });
+        }
         
     } catch (error) {
         console.error('Error al cargar el contenido:', error);
@@ -265,6 +287,19 @@ async function loadContent(pageName, pageNumber = 1) {
             </div>
         `;
         loadingIndicator.classList.add('hidden');
+    }
+}
+
+function waitForElementVisible(selector, callback, retries = 20) {
+    const el = document.querySelector(selector);
+    const isVisible = el && el.offsetWidth > 0 && el.offsetHeight > 0;
+
+    if (isVisible) {
+        callback(el);
+    } else if (retries > 0) {
+        setTimeout(() => waitForElementVisible(selector, callback, retries - 1), 100);
+    } else {
+        console.warn(`Elemento ${selector} no visible tras múltiples intentos`);
     }
 }
 
@@ -288,6 +323,13 @@ function executeScripts(container) {
         // Reemplazar el viejo script con el nuevo para que se ejecute
         script.parentNode.replaceChild(newScript, script);
     });
+
+    if (currentPage === 'dashboard' || currentPage === 'dashboard-content.html') {
+        console.log("estas en el dashboard")
+        waitForElementVisible('#ventasChart', () => {
+            initializeChart();
+        });
+    }
 }
 
 // Función para actualizar las clases del menú
@@ -326,16 +368,78 @@ window.addEventListener('popstate', (event) => {
     }
 });
 
-// Inicializar la aplicación cargando la página del hash URL o el dashboard por defecto
+// FUNCIÓN PARA VERIFICAR Y REDIRIGIR AL HASH CORRECTO
+function ensureHashRoute() {
+    // Si no hay hash en la URL, redirigir a #dashboard
+    if (!window.location.hash || window.location.hash === '#') {
+        console.log('No hay hash, redirigiendo a #dashboard');
+        window.location.hash = '#dashboard';
+        return true; // Indica que se hizo una redirección
+    }
+    return false; // No se hizo redirección
+}
+
+// INICIALIZACIÓN PRINCIPAL - CORREGIDA CON REDIRECCIÓN AUTOMÁTICA
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar paginación
-    initializePagination();
+    console.log('DOMContentLoaded - Iniciando aplicación');
+    console.log('URL actual:', window.location.href);
+    console.log('Hash actual:', window.location.hash);
     
-    // Verificar si hay un hash en la URL
-    const hash = window.location.hash.substring(1);
-    if (hash && pages[hash]) {
-        loadContent(hash);
-    } else {
-        loadContent('dashboard');
+    initializePagination();
+
+    // VERIFICAR Y REDIRIGIR SI ES NECESARIO
+    const wasRedirected = ensureHashRoute();
+    
+    if (wasRedirected) {
+        console.log('Se hizo redirección automática, esperando al hashchange...');
+        // El hashchange event se encargará de cargar el contenido
+        return;
+    }
+
+    // Obtener la página inicial del hash
+    let initialPage = window.location.hash.substring(1);
+    
+    // Extraer solo el nombre de la página (por si hay parámetros como ?page=2)
+    if (initialPage.includes('?')) {
+        initialPage = initialPage.split('?')[0];
+    }
+    
+    console.log('Página inicial detectada:', initialPage);
+    
+    // Validar si la página existe
+    if (!initialPage || !pages[initialPage]) {
+        console.log('Página no válida, redirigiendo a dashboard');
+        window.location.hash = '#dashboard';
+        return;
+    }
+
+    // Cargar contenido inmediatamente
+    console.log('Cargando contenido de:', initialPage);
+    loadContent(initialPage, 1);
+});
+
+// Escuchar cambios de hash (cuando haces click en menú por ejemplo)
+window.addEventListener('hashchange', () => {
+    const newHash = window.location.hash.substring(1);
+    let pageName = newHash;
+    
+    // Extraer solo el nombre de la página si hay parámetros
+    if (pageName.includes('?')) {
+        pageName = pageName.split('?')[0];
+    }
+    
+    console.log('Hash cambió a:', newHash, 'Página:', pageName);
+    
+    // Si no hay página o no es válida, redirigir a dashboard
+    if (!pageName || !pages[pageName]) {
+        console.log('Hash inválido, redirigiendo a dashboard');
+        window.location.hash = '#dashboard';
+        return;
+    }
+    
+    // Solo cargar si es diferente a la página actual
+    if (pageName !== currentPage) {
+        console.log('Cargando nueva página desde hashchange:', pageName);
+        loadContent(pageName, 1);
     }
 });

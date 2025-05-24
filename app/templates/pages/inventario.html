@@ -5,11 +5,11 @@
         <!-- Resumen del inventario -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <!-- Total productos -->
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-green-50">
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-green-50">
                 <div class="text-green-500 font-semibold">Productos Totales</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">868</div>
-                    <div class="text-lg font-semibold text-gray-800">$25000</div>
+                    <div class="text-2xl font-bold">{{ pagination.total }}</div>
+                    <div class="text-lg font-semibold text-gray-800">${{cost}}</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Últimos 7 días</div>
@@ -18,28 +18,26 @@
             </div>
             
             <!-- Más vendidos -->
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-purple-50">
-                <div class="text-purple-500 font-semibold">Más Vendidos</div>
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-purple-50">
+                <div class="text-purple-500 font-semibold">Más Vendido</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">5</div>
-                    <div class="text-lg font-semibold text-gray-800">$2500</div>
+                    <div class="text-2xl font-bold">{{max_sell.product}}</div>
+                    <div class="text-lg font-semibold text-gray-800">{{max_sell.total_sold}}</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Últimos 7 días</div>
-                    <div>Costo</div>
+                    <div>Unidades</div>
                 </div>
             </div>
             
             <!-- Existencias bajas -->
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-red-50">
+            <div class="bg-white p-4 rounded-lg transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-red-50">
                 <div class="text-red-500 font-semibold">Existencias Bajas</div>
                 <div class="flex justify-between items-end mt-2">
                     <div class="text-2xl font-bold">{{low}}</div>
-                    <div class="text-lg font-semibold text-gray-800">-</div>
                 </div>
                 <div class="flex justify-between text-xs text-gray-500">
                     <div>Total</div>
-                    <div>Próximo pedido</div>
                 </div>
             </div>
         </div>
@@ -97,10 +95,10 @@
                                 <div class="text-sm font-medium text-gray-900">{{p.nombre}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{p.precioCompra}}</div>
+                                <div class="text-sm text-gray-900">${{p.precioCompra}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{p.precioVenta}}</div>
+                                <div class="text-sm text-gray-900">${{p.precioVenta}}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{p.cantidad}} paquetes</div>
