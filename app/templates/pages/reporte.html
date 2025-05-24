@@ -5,27 +5,26 @@
         <!-- Resumen del inventario -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <!-- Total productos -->
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-blue-50">
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-blue-50">
                 <div class="text-blue-500 font-semibold">Beneficio total</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">$21900</div>
+                    <div class="text-2xl font-bold">${{ summary.beneficio_total }}</div>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-purple-50">
-                <div class="text-purple-500 font-semibold">Ingresos</div>
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-purple-50">
+                <div class="text-purple-500 font-semibold">Total de compras</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">$18000</div>
+                    <div class="text-2xl font-bold">${{ summary.ingresos }}</div>
                 </div>
             </div>
 
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-green-50">
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-green-50">
                 <div class="text-green-500 font-semibold">Ventas</div>
                 <div class="flex justify-between items-end mt-2">
-                    <div class="text-2xl font-bold">$17495</div>
+                    <div class="text-2xl font-bold">${{ summary.ventas }}</div>
                 </div>
             </div>
-
         </div>
 
         <!-- Ganancias e ingresos Graph -->
@@ -58,12 +57,6 @@
             <div class="p-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 class="text-lg font-semibold">Productos más Vendidos</h2>
                 <div class="flex gap-2">
-                    <div class="relative">
-                        <button class="border border-gray-200 bg-white px-4 py-2 rounded flex items-center">
-                            <i class="fas fa-filter mr-2"></i>
-                            <span>Filtros</span>
-                        </button>
-                    </div>
                     <button class="border border-gray-200 bg-white px-4 py-2 rounded">
                         Descargar todo
                     </button>
@@ -97,121 +90,40 @@
                             </th>
                         </tr>
                     </thead>
+
+                    <!-- Cuerpo de la tabla -->
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <!-- Fila de producto -->
+                        {% for producto in top_products %}
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">Maggi</div>
+                                <div class="text-sm font-medium text-gray-900">{{ producto.producto }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">$430</div>
+                                <div class="text-sm text-gray-900">${{ producto.valor_venta }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">43 Paquetes</div>
+                                <div class="text-sm text-gray-900">{{ producto.cantidad_vendida }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">1234</div>
+                                <div class="text-sm text-gray-900">{{ producto.id_venta }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">23/08/24</div>
+                                <div class="text-sm text-gray-900">{{ producto.fecha_venta }}</div>
                             </td>
                         </tr>
+                        {% endfor %}
+                        
+                        <!-- Si no hay productos vendidos -->
+                        {% if not top_products %}
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">Coca Cola</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">$1500</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">15 Botellas</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">5678</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">24/08/24</div>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                No hay productos vendidos en los últimos 7 días
                             </td>
                         </tr>
-
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">Galletas</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">$200</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">20 Paquetes</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">9101</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">25/08/24</div>
-                            </td>
-                        </tr>
-
-
-                        <!-- Puedes agregar más filas de productos aquí -->
+                        {% endif %}
                     </tbody>
                 </table>
-            </div>
 
-            <!-- Paginación -->
-            <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                <div class="flex-1 flex justify-between sm:hidden">
-                    <a href="#"
-                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        Anterior
-                    </a>
-                    <a href="#"
-                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                        Siguiente
-                    </a>
-                </div>
-                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-sm text-gray-700">
-                            Página <span class="font-medium">1</span> de <span class="font-medium">10</span>
-                        </p>
-                    </div>
-                    <div>
-                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                            <a href="#"
-                                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                <span class="sr-only">Anterior</span>
-                                <i class="fas fa-chevron-left text-xs"></i>
-                            </a>
-                            <!-- Páginas -->
-                            <a href="#" aria-current="page"
-                                class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
-                                1
-                            </a>
-                            <a href="#"
-                                class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                2
-                            </a>
-                            <a href="#"
-                                class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                3
-                            </a>
-                            <span
-                                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                                ...
-                            </span>
-                            <a href="#"
-                                class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                10
-                            </a>
-                            <a href="#"
-                                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                <span class="sr-only">Siguiente</span>
-                                <i class="fas fa-chevron-right text-xs"></i>
-                            </a>
-                        </nav>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

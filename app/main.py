@@ -168,6 +168,7 @@ def serve_pages(page_name):
         productos = get_all_products()
         productLow = get_info_low()
         cost = sum_costs()
+        top_products = get_top_selling_products(3)
         
 
     if page_name == 'inventario.html':
@@ -193,12 +194,17 @@ def serve_pages(page_name):
         label = info.get("labels", [])
         total = info.get("totals", [])
         cantidad = info.get("cantidad", [])
+        
+        # NUEVAS LÍNEAS: Obtener datos del reporte
+        summary = get_report_summary()
+        top_products = get_top_selling_products(3)
+        
         productos = []
         low = 0
         sales = []
         productLow = []
-        cost = 0;
-        pagination = {"page": 1, "pages": 1, "has_prev": False, "has_next": False, "total": 0}  # <- esto faltaba
+        cost = 0
+        pagination = {"page": 1, "pages": 1, "has_prev": False, "has_next": False, "total": 0}
 
     
     elif page_name == 'proveedores.html':
@@ -255,32 +261,36 @@ def serve_pages(page_name):
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render_template(f'pages/{page_name}', 
-                             prov=prov, 
-                             productos=productos, 
-                             low=low,
-                             max_sell=max, 
-                             sales=sales,
-                             pagination=pagination,
-                             label=label,
-                             total=total,
-                             cost=cost,
-                             cantidad=cantidad,
-                             productLow=productLow,
-                             current_page_name=page_name)
+                            prov=prov, 
+                            productos=productos, 
+                            low=low,
+                            max_sell=max, 
+                            sales=sales,
+                            pagination=pagination,
+                            label=label,
+                            total=total,
+                            cost=cost,
+                            cantidad=cantidad,
+                            productLow=productLow,
+                            summary=summary if page_name == 'reporte.html' else {},
+                            top_products=top_products if page_name in ['reporte.html', 'dashboard-content.html'] else [],
+                            current_page_name=page_name)
 
     return render_template(f'pages/{page_name}', 
-                         prov=prov, 
-                         productos=productos, 
-                         low=low, 
-                         sales=sales,
-                         max_sell=get_max_sell,
-                         pagination=pagination,
-                         label=label,
-                         total=total,
-                         cost=cost,
-                         cantidad = cantidad,
-                         productLow=productLow,
-                         current_page_name=page_name)
+                        prov=prov, 
+                        productos=productos, 
+                        low=low, 
+                        sales=sales,
+                        max_sell=get_max_sell,
+                        pagination=pagination,
+                        label=label,
+                        total=total,
+                        cost=cost,
+                        cantidad=cantidad,
+                        productLow=productLow,
+                        summary=summary if page_name == 'reporte.html' else {},
+                        top_products=top_products if page_name in ['reporte.html', 'dashboard-content.html'] else [],
+                        current_page_name=page_name)
 
 @app.route('/logout')
 def logout():

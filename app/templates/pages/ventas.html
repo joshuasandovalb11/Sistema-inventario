@@ -5,7 +5,7 @@
         <!-- Resumen de ventas -->
         <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
             <!-- Ventas Totales -->
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-blue-50">
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-blue-50">
                 <div class="text-blue-500 font-semibold">Ventas Totales</div>
                 <div class="flex justify-between items-end mt-2">
                     <div class="text-2xl font-bold">{{ cantidad | sum }}</div>
@@ -14,7 +14,7 @@
                     <div>Últimos 7 días</div>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow hover:scale-105 hover:bg-orange-50">
+            <div class="bg-white p-4 rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-orange-50">
                 <div class="text-orange-500 font-semibold">Total recibido</div>
                 <div class="flex justify-between items-end mt-2">
                     <div class="text-2xl font-bold">${{total | sum}}</div>
@@ -33,12 +33,6 @@
                     <button type="button" id="btn-vender-producto" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded flex items-center">
                         <span>Vender producto</span>
                     </button>
-                    <div class="relative">
-                        <button class="border border-gray-200 bg-white px-4 py-2 rounded flex items-center">
-                            <i class="fas fa-filter mr-2"></i>
-                            <span>Filtros</span>
-                        </button>
-                    </div>
                     <button class="border border-gray-200 bg-white px-4 py-2 rounded">
                         Descargar Todo
                     </button>
@@ -190,22 +184,11 @@
     <div id="modal-vender-producto" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
             <div class="p-6">
-                <h3 class="text-lg font-semibold text-center mb-6">Nuevo Producto</h3>
-                
-                <!-- Subir imagen -->
-                <div class="mb-6 flex flex-col items-center">
-                    <div class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-2">
-                        <div class="text-center">
-                            <p class="text-sm text-gray-400">Arrastre la imagen aquí</p>
-                            <p class="text-sm text-gray-400">o</p>
-                            <button class="text-primary text-sm">Buscar imagen</button>
-                        </div>
-                    </div>
-                </div>
+                <h3 class="text-lg font-semibold text-center mb-6">Vender Producto</h3>
                 
                 <!-- Formulario -->
                 <form action="/sellProduct" method="POST">
-                    <div class="mb-4">
+                    <div class="mb-4 py-4">
                         <select id="sellId" name="sellId" class="w-full border border-gray-300 rounded-md px-3 py-2">
                             <option value="" disabled selected>Elige un producto</option>
                             {% for p in productos %}
@@ -217,8 +200,8 @@
                     <div class="mb-4">
                         <label for="sellQuantity" class="block text-sm font-medium text-gray-700 mb-1">Cantidad de compra</label>
                         <input type="number" id="sellQuantity" name="sellQuantity" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Ingresa el precio de compra">
-                   
-                    <div class="flex justify-end space-x-2">
+                    </div>
+                    <div class="flex justify-end space-x-2 py-4">
                         <button type="button" id="btn-descartar" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Descartar</button>
                         <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark">Añadir Producto</button>
                     </div>

@@ -3,9 +3,9 @@
         <h1 class="text-2xl font-bold mb-6">Resumen de Ventas</h1>
         
         <!-- Resumen de Ventas -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="grid grid-cols-2 md:grid-cols-2 gap-4 mb-8">
             <!-- Card Ventas -->
-            <div class="bg-white rounded-lg shadow p-4 hover:scale-105 hover:bg-blue-50">
+            <div class="bg-white rounded-lg shadow p-4 transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-blue-50">
                 <div class="text-blue-500 font-semibold">Ventas</div>
                 <div class="flex justify-between items-end mt-2">
                     <div class="text-2xl font-bold">{{ cantidad | sum }}</div>
@@ -18,7 +18,7 @@
             </div>
             
             <!-- Card Ingresos -->
-            <div class="bg-white rounded-lg shadow p-4 hover:scale-105 hover:bg-purple-50">
+            <div class="bg-white rounded-lg shadow p-4 transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-purple-50">
                 <div class="text-purple-500 font-semibold">Ingresos</div>
                 <div class="flex justify-between items-end mt-2">
                     <div class="text-2xl font-bold">${{total | sum}}</div>
@@ -53,7 +53,7 @@
         <!-- Resumen y Productos -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <!-- Resumen de la Compra -->
-            <div class="bg-white rounded-lg shadow hover:scale-105 hover:bg-blue-50">
+            <div class="bg-white rounded-lg shadow transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-blue-50">
                 <div class="p-4 border-b border-gray-200">
                     <h2 class="text-lg font-semibold">Resumen de la Compra</h2>
                 </div>
@@ -72,7 +72,7 @@
             </div>
         
             <!-- Resumen del Producto -->
-            <div class="bg-white rounded-lg shadow md:col-span-2 hover:scale-105 hover:bg-purple-50">
+            <div class="bg-white rounded-lg shadow md:col-span-2 transition delay-50 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:bg-purple-50">
                 <div class="p-4 border-b border-gray-200">
                     <h2 class="text-lg font-semibold">Resumen del Producto</h2>
                 </div>
@@ -96,73 +96,77 @@
         <!-- Tablas de Productos -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Productos mas Vendidos -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="p-4 border-b border-gray-200 flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Productos más Vendidos</h2>
+                    <div class="flex gap-2">
+                        <button class="border border-gray-200 bg-white px-4 py-2 rounded">
+                            Descargar todo
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Tabla de productos -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nombre
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Producto
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Valor de Venta
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Cantidad Vendida
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Cantidad Restante
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ID de Venta
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Precio
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Fecha de Venta
                                 </th>
                             </tr>
                         </thead>
+
+                        <!-- Cuerpo de la tabla -->
                         <tbody class="bg-white divide-y divide-gray-200">
+                            {% for producto in top_products %}
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">Surf Excel</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ producto.producto }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">30</div>
+                                    <div class="text-sm text-gray-900">${{ producto.valor_venta }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">12</div>
+                                    <div class="text-sm text-gray-900">{{ producto.cantidad_vendida }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">$ 100</div>
+                                    <div class="text-sm text-gray-900">{{ producto.id_venta }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ producto.fecha_venta }}</div>
                                 </td>
                             </tr>
+                            {% endfor %}
+                            
+                            <!-- Si no hay productos vendidos -->
+                            {% if not top_products %}
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">Rin</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">21</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">15</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">$ 207</div>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                    No hay productos vendidos en los últimos 7 días
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">Parie G</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">19</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">17</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-800">$ 105</div>
-                                </td>
-                            </tr>
+                            {% endif %}
                         </tbody>
                     </table>
+
                 </div>
             </div>
         
@@ -176,9 +180,6 @@
                     {% for pl in productLow %}
                     <div class="p-4 flex justify-between items-center">
                         <div class="flex items-center">
-                            <div class="w-12 h-12 mr-4">
-                                <img src="/api/placeholder/48/48" alt="Tata Salt" class="w-full h-full object-cover rounded">
-                            </div>
                             <div>
                                 <h3 class="font-medium">{{pl.product}}</h3>
                                 <p class="text-sm text-gray-500">Cantidad restante: {{pl.quantity}} paquetes</p>
@@ -189,6 +190,7 @@
                     {% endfor %}
                 </div>
             </div>
+            
         </div>
     </div>
     

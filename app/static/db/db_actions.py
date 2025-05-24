@@ -439,6 +439,203 @@ def get_sells_information():
         finally:
             close_db_connection(conn, cur)
 
+def get_report_summary():
+    """Obtiene el resumen para las tarjetas del reporte (beneficio total, ingresos, ventas)"""
+    conn, cur = get_db_connection()
+    if conn is None:
+        return {"beneficio_total": 0, "ingresos": 0, "ventas": 0}, 500
+    else:
+        try:
+            # 1. Calcular beneficio total
+            #Solo beneficios de ventas reales de los últimos 7 días
+            cur.execute("""
+                SELECT 
+                    COALESCE(SUM((p."precioVenta" - p."precioCompra") * dv.cantidad), 0) AS beneficio_total
+                FROM "detalleVenta" AS dv
+                JOIN ventas AS v ON dv."idVenta" = v."idVenta"
+                JOIN productos AS p ON dv."idProducto" = p."idProducto"
+                WHERE v.fecha >= CURRENT_DATE - INTERVAL '7 days'
+                    AND p.activa = true
+            """)
+            beneficio_result = cur.fetchone()
+            beneficio_total = beneficio_result[0] if beneficio_result[0] is not None else 0
+
+            # 2. Calcular ingresos (suma del valor de inventario actual)
+            # Esto representa el valor total del inventario basado en precios de compra
+            cur.execute("""
+                SELECT COALESCE(SUM("precioCompra" * cantidad * "cantidadUnidad"), 0) AS valor_inventario
+                FROM productos
+                WHERE activa = true
+            """)
+            ingresos_result = cur.fetchone()
+            ingresos = ingresos_result[0] if ingresos_result[0] is not None else 0
+
+            # 3. Calcular total de ventas (últimos 7 días)
+            cur.execute("""
+                SELECT COALESCE(SUM(v.total), 0) AS ventas_total
+                FROM ventas AS v
+                WHERE v.fecha >= CURRENT_DATE - INTERVAL '7 days'
+            """)
+            ventas_result = cur.fetchone()
+            ventas_total = ventas_result[0] if ventas_result[0] is not None else 0
+
+            return {
+                "beneficio_total": round(float(beneficio_total), 2),
+                "ingresos": round(float(ingresos), 2),
+                "ventas": round(float(ventas_total), 2)
+            }
+
+        except Exception as e:
+            print("Error al obtener resumen del reporte:", e)
+            return {"beneficio_total": 0, "ingresos": 0, "ventas": 0}, 500
+        finally:
+            close_db_connection(conn, cur)
+
+
+def get_top_selling_products(limit=10):
+    """
+    Obtiene los productos más vendidos (últimos 7 días)
+    CORREGIDO: Agrupa por producto, no por venta individual
+    """
+    conn, cur = get_db_connection()
+    if conn is None:
+        return [], 500
+    else:
+        try:
+            # CORREGIDO: Agrupamos por producto para obtener realmente los más vendidos
+            cur.execute("""
+                SELECT 
+                    p.nombre AS producto,
+                    SUM(dv.cantidad * p."precioVenta") AS valor_venta_total,
+                    SUM(dv.cantidad) AS cantidad_vendida_total,
+                    COUNT(DISTINCT v."idVenta") AS num_ventas,
+                    MAX(v.fecha) AS ultima_venta
+                FROM "detalleVenta" AS dv
+                JOIN ventas AS v ON dv."idVenta" = v."idVenta"
+                JOIN productos AS p ON dv."idProducto" = p."idProducto"
+                WHERE v.fecha >= CURRENT_DATE - INTERVAL '7 days'
+                    AND p.activa = true
+                GROUP BY p."idProducto", p.nombre
+                ORDER BY cantidad_vendida_total DESC, valor_venta_total DESC
+                LIMIT %s
+            """, (limit,))
+            
+            results = cur.fetchall()
+            
+            products_list = []
+            for row in results:
+                products_list.append({
+                    "producto": row[0],
+                    "valor_venta": round(float(row[1]), 2),
+                    "cantidad_vendida": int(row[2]),
+                    "id_venta": f"{int(row[3])} ventas",  # Número de transacciones
+                    "fecha_venta": row[4].strftime("%d/%m/%Y") if row[4] else ""
+                })
+            
+            return products_list
+
+        except Exception as e:
+            print("Error al obtener productos más vendidos:", e)
+            return [], 500
+        finally:
+            close_db_connection(conn, cur)
+
+
+def get_sales_chart_data():
+    """
+    NUEVA FUNCIÓN: Obtiene datos para el gráfico de ventas de los últimos 7 días
+    """
+    conn, cur = get_db_connection()
+    if conn is None:
+        return {"labels": [], "totals": []}, 500
+    else:
+        try:
+            cur.execute("""
+                SELECT 
+                    DATE(fecha) as fecha_venta,
+                    COALESCE(SUM(total), 0) as total_dia
+                FROM ventas 
+                WHERE fecha >= CURRENT_DATE - INTERVAL '7 days'
+                GROUP BY DATE(fecha)
+                ORDER BY fecha_venta ASC
+            """)
+            
+            results = cur.fetchall()
+            
+            # Crear arrays para los últimos 7 días, incluyendo días sin ventas
+            import datetime
+            labels = []
+            totals = []
+            
+            # Generar los últimos 7 días
+            today = datetime.date.today()
+            for i in range(6, -1, -1):  # 6, 5, 4, 3, 2, 1, 0
+                date = today - datetime.timedelta(days=i)
+                labels.append(date.strftime("%d/%m"))
+                
+                # Buscar si hay ventas para este día
+                total_for_date = 0
+                for row in results:
+                    if row[0] == date:
+                        total_for_date = float(row[1])
+                        break
+                
+                totals.append(round(total_for_date, 2))
+            
+            return {
+                "labels": labels,
+                "totals": totals
+            }
+
+        except Exception as e:
+            print("Error al obtener datos del gráfico:", e)
+            return {"labels": [], "totals": []}, 500
+        finally:
+            close_db_connection(conn, cur)
+
+
+# FUNCIÓN ADICIONAL: Para validar consistencia de datos
+def validate_report_data():
+    """
+    Función de validación para verificar la consistencia de los datos del reporte
+    """
+    conn, cur = get_db_connection()
+    if conn is None:
+        return False
+    
+    try:
+        # Verificar que las ventas tengan detalles correspondientes
+        cur.execute("""
+            SELECT COUNT(*) 
+            FROM ventas v 
+            LEFT JOIN "detalleVenta" dv ON v."idVenta" = dv."idVenta"
+            WHERE dv."idVenta" IS NULL
+        """)
+        ventas_sin_detalle = cur.fetchone()[0]
+        
+        # Verificar que los detalles tengan productos válidos
+        cur.execute("""
+            SELECT COUNT(*) 
+            FROM "detalleVenta" dv 
+            LEFT JOIN productos p ON dv."idProducto" = p."idProducto"
+            WHERE p."idProducto" IS NULL OR p.activa = false
+        """)
+        detalles_sin_producto = cur.fetchone()[0]
+        
+        if ventas_sin_detalle > 0:
+            print(f"⚠️  Advertencia: {ventas_sin_detalle} ventas sin detalles")
+        
+        if detalles_sin_producto > 0:
+            print(f"⚠️  Advertencia: {detalles_sin_producto} detalles con productos inválidos")
+        
+        return ventas_sin_detalle == 0 and detalles_sin_producto == 0
+        
+    except Exception as e:
+        print("Error en validación:", e)
+        return False
+    finally:
+        close_db_connection(conn, cur)
+
 def get_info_low():
     conn, cur = get_db_connection()
     if conn is None:
