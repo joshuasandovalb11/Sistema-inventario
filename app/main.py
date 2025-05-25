@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from app.static.db.connection import get_db_connection, close_db_connection
 from app.static.db.db_actions import *
+from app.static.validations import *
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'  # Necesario para usar sessions
@@ -12,83 +13,129 @@ def index():
 @app.route('/deleteProduct/<int:product_id>', methods=['GET', 'POST'])
 def deleteProduct(product_id):
     if request.method == 'POST':
-        delete_product(product_id)
-    # return render_template('deleteProduct.html')
+        if product_id:
+            delete_product(product_id)
+            flash("Producto eliminado correctamente.", "success")
+        else:
+            flash("ID de producto inválido.", "error")
     return redirect(url_for('dashboard') + '#inventario')
 
 @app.route('/deleteProvider/<int:provider_id>', methods=['GET', 'POST'])
 def deleteProvider(provider_id):
     if request.method == 'POST':
-        delete_provider(provider_id)
-    # return render_template('deleteProvider.html')
+        if provider_id:
+            delete_provider(provider_id)
+            flash("Proveedor eliminado correctamente.", "success")
+        else:
+            flash("ID de proveedor inválido.", "error")
     return redirect(url_for('dashboard') + '#proveedores')
 
 @app.route("/addProvider", methods=["GET", "POST"])
 def connection():
     if request.method == "POST":
-        provider_name = request.form.get("nombreProveedor")
-        provider_email = request.form.get("correoProveedor")
-        provider_phone = request.form.get("numeroContacto")
+        provider_name = request.form.get("nombreProveedor").strip()
+        provider_email = request.form.get("correoProveedor").strip()
+        provider_phone = request.form.get("numeroContacto").strip()
 
-        # Llamar a la función para agregar el proveedor
-        add_provider(provider_name, provider_email, provider_phone)
+        if provider_name and provider_email and provider_phone:
+            valido, mensaje = validar_datos_proveedor(provider_name, provider_email, provider_phone)
+            if valido:
+                add_provider(provider_name, provider_email, provider_phone)
+                flash("Proveedor agregado correctamente.", "success")
+            else:
+                flash(mensaje, "error")
+        else:
+            flash("Todos los campos son obligatorios.", "error")
 
         return redirect(url_for('dashboard') + '#proveedores')
-
-    # return render_template('addProvider.html')
 
 @app.route("/editProvider", methods=["GET", "POST"])
 def editProvider():
     if request.method == "POST":
         provider_id = request.form.get("editProviderId")
-        provider_name = request.form.get("editNombreProveedor")
-        provider_email = request.form.get("editCorreoProveedor")
-        provider_phone = request.form.get("editNumeroContacto")
+        provider_name = request.form.get("editNombreProveedor").strip()
+        provider_email = request.form.get("editCorreoProveedor").strip()
+        provider_phone = request.form.get("editNumeroContacto").strip()
 
-        # Llamar a la función para agregar el proveedor
-        edit_provider(provider_id, provider_name, provider_email, provider_phone)
+        if provider_id and provider_name and provider_email and provider_phone:
+            valido, mensaje = validar_datos_proveedor(provider_name, provider_email, provider_phone)
+            if valido:
+                edit_provider(provider_id, provider_name, provider_email, provider_phone)
+                flash("Proveedor actualizado correctamente.", "success")
+            else:
+                flash(mensaje, "error")
+        else:
+            flash("Todos los campos son obligatorios.", "error")
 
         return redirect(url_for('dashboard') + '#proveedores')
-
-    # return render_template('addProvider.html')
 
 @app.route("/addProduct", methods=["GET", "POST"])
 def addProduct():
     if request.method == "POST":
         provider = request.form.get("proveedor_id")
-        productName = request.form.get("productName")
+        productName = request.form.get("productName").strip()
         priceBuy = request.form.get("priceBuy")
         priceSell = request.form.get("priceSell")
         packageQuantity = request.form.get("packageQuantity")
         quantity = request.form.get("unity")
         isActive = True
 
-        if provider is None:
-            return redirect(url_for('dashboard') + '#proveedores')
+        if not all([provider, productName, priceBuy, priceSell, packageQuantity, quantity]):
+            flash("Todos los campos son obligatorios.", "error")
+            return redirect(url_for('dashboard') + '#inventario')
 
-        # Llamar a la función para agregar el proveedor
+        valido, mensaje = validar_campos_numericos(priceBuy, priceSell, packageQuantity, quantity)
+        if not valido:
+            flash(mensaje, "error")
+            return redirect(url_for('dashboard') + '#inventario')
+
+        valido, mensaje = validar_nombre(productName)
+        if not valido:
+            flash(mensaje, "error")
+            return redirect(url_for('dashboard') + '#inventario')
+
         add_product(provider, productName, priceBuy, priceSell, packageQuantity, quantity, isActive)
+        flash("Producto agregado correctamente.", "success")
 
         return redirect(url_for('dashboard') + '#inventario')
 
-    # return render_template('addProvider.html')
-
-@app.route('/editProduct', methods=['GET', 'POST'])
+@app.route('/editProduct', methods=['POST'])
 def editProduct():
-    if request.method == 'POST':
-        product_id = request.form.get("editId")
-        productName = request.form.get("editProductName")
-        priceBuy = request.form.get("editPriceBuy")
-        priceSell = request.form.get("editPriceSell")
-        packageQuantity = request.form.get("editPackageQuantity")
-        quantity = request.form.get("editUnity")
+    product_id = request.form.get("editId")
+    provider_id = request.form.get("editProveedor")
+    productName = request.form.get("editProductName").strip()
+    priceBuy = request.form.get("editPriceBuy")
+    priceSell = request.form.get("editPriceSell")
+    packageQuantity = request.form.get("editPackageQuantity")
+    quantity = request.form.get("editUnity")
 
-        # Llamar a la función para agregar el proveedor
-        edit_product(product_id, productName, priceBuy, priceSell, packageQuantity, quantity)
-
+    # Validar que no haya campos vacíos
+    if not all([product_id, provider_id, productName, priceBuy, priceSell, packageQuantity, quantity]):
+        flash("Todos los campos son obligatorios.", "error")
         return redirect(url_for('dashboard') + '#inventario')
 
-    # return render_template('addProvider.html')
+    # Validar campos numéricos
+    valido, mensaje = validar_campos_numericos(priceBuy, priceSell, packageQuantity, quantity)
+    if not valido:
+        flash(mensaje, "error")
+        return redirect(url_for('dashboard') + '#inventario')
+    
+    valido, mensaje = proveedor_existe(provider_id)
+    if not valido:
+        flash(mensaje, "error")
+        return redirect(url_for('dashboard') + '#inventario')
+
+    # Validar nombre
+    valido, mensaje = validar_nombre(productName)
+    if not valido:
+        flash(mensaje, "error")
+        return redirect(url_for('dashboard') + '#inventario')
+
+    # Editar producto si todo es válido
+    edit_product(product_id, provider_id, productName, priceBuy, priceSell, packageQuantity, quantity)
+    flash("Producto actualizado correctamente.", "success")
+    return redirect(url_for('dashboard') + '#inventario')
+
 
 @app.route('/sellProduct', methods=['GET', 'POST'])
 def sellProduct():
@@ -96,12 +143,18 @@ def sellProduct():
         product_id = request.form.get("sellId")
         quantity = request.form.get("sellQuantity")
 
-        # Llamar a la función para agregar el proveedor
-        sell_product(product_id, quantity)
+        if not product_id or not quantity:
+            flash("Todos los campos son obligatorios para realizar la venta.", "error")
+            return redirect(url_for('dashboard') + '#ventas')
+
+        valido, mensaje = validar_cantidad_venta(product_id, quantity)
+        if valido:
+            sell_product(product_id, quantity)
+            flash("Venta realizada correctamente.", "success")
+        else:
+            flash(mensaje, "error")
 
         return redirect(url_for('dashboard') + '#ventas')
-
-    # return render_template('addProvider.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

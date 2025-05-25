@@ -112,6 +112,7 @@ def get_all_products():
             cur.execute("""
                 SELECT "idProducto", nombre, "precioCompra", "precioVenta", cantidad, "cantidadUnidad"
                 FROM productos
+                WHERE activa = true
                 ORDER BY nombre
             """)
             
@@ -157,7 +158,7 @@ def delete_provider(provider_id):
         print("Error al conectar a la base de datos")
         return "Error al conectar a la base de datos", 500
     else:
-        cur.execute("""UPDATE productos SET activa = %s WHERE "idProveedor %s" """, ("false", provider_id,))
+        cur.execute("""UPDATE productos SET "idProveedor" = NULL, activa = %s WHERE "idProveedor" = %s""", ("false", provider_id,))
         conn.commit()
         cur.execute('DELETE FROM proveedores WHERE "idProveedor" = %s', (provider_id,))
         conn.commit()
@@ -256,7 +257,7 @@ def get_product_low():
 
         return count
 
-def edit_product(product_id, productName, priceBuy, priceSell, packageQuantity, quantity):
+def edit_product(product_id, provider_id, productName, priceBuy, priceSell, packageQuantity, quantity):
     conn, cur = get_db_connection()
     if conn is None:
         print("Error al conectar a la base de datos")
@@ -267,9 +268,9 @@ def edit_product(product_id, productName, priceBuy, priceSell, packageQuantity, 
             # Insertar el nuevo producto en la tabla products
             cur.execute("""
                 UPDATE productos
-                SET nombre = %s, "precioCompra" = %s, "precioVenta" = %s, cantidad = %s, "cantidadUnidad" = %s
+                SET nombre = %s, "idProveedor" = %s ,"precioCompra" = %s, "precioVenta" = %s, cantidad = %s, "cantidadUnidad" = %s
                 WHERE "idProducto" = %s
-            """, (productName, priceBuy, priceSell, packageQuantity, quantity, product_id))
+            """, (productName, provider_id, priceBuy, priceSell, packageQuantity, quantity, product_id))
             conn.commit()
             print("Producto editado exitosamente")
             # return "Producto editado exitosamente", 200
@@ -463,7 +464,7 @@ def get_report_summary():
             # 2. Calcular ingresos (suma del valor de inventario actual)
             # Esto representa el valor total del inventario basado en precios de compra
             cur.execute("""
-                SELECT COALESCE(SUM("precioCompra" * cantidad * "cantidadUnidad"), 0) AS valor_inventario
+                SELECT COALESCE(SUM("precioCompra" * cantidad), 0) AS valor_inventario
                 FROM productos
                 WHERE activa = true
             """)
@@ -646,7 +647,7 @@ def get_info_low():
             cur.execute("""
                 SELECT p.nombre, p.cantidad
                 FROM productos AS p
-                WHERE p.cantidad <= 4
+                WHERE p.cantidad <= 4 AND p.activa = 'true'
                 ORDER BY p.cantidad ASC
                 LIMIT 3
             """)
@@ -672,6 +673,7 @@ def sum_costs():
             cur.execute("""
                 SELECT SUM("precioCompra" * cantidad) AS total
                 FROM productos
+                WHERE activa = true
             """)
             result = cur.fetchone()
             return result[0] if result[0] is not None else 0

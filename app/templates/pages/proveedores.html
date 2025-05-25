@@ -257,6 +257,19 @@
     </div>
     {% endfor %}
 
+    <div class="container mt-3 mx-auto flex justify-center">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="animate-pulse px-6 py-3 rounded-2xl shadow-md text-white text-center
+                        {{ 'bg-red-600' if category == 'error' else 'bg-green-600' }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
      <script>
         document.addEventListener('click', e => {
         //Abrir
