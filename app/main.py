@@ -93,6 +93,11 @@ def addProduct():
         if not valido:
             flash(mensaje, "error")
             return redirect(url_for('dashboard') + '#inventario')
+        
+        valido, mensaje = existe_producto(productName)
+        if not valido:
+            flash(mensaje, "error")
+            return redirect(url_for('dashboard') + '#inventario')
 
         add_product(provider, productName, priceBuy, priceSell, packageQuantity, quantity, isActive)
         flash("Producto agregado correctamente.", "success")
@@ -159,18 +164,16 @@ def sellProduct():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        text = request.form.get('text')
         password = request.form.get('password')
         
-        # Aquí harías la validación real de credenciales
-        # Por ejemplo, verificar contra una base de datos
-        
-        # Para este ejemplo, aceptamos cualquier combinación
-        session['logged_in'] = True
-        session['user_email'] = email
-        
-        # Redirigir al dashboard después de un login exitoso
-        return redirect(url_for('dashboard'))
+        if validar_login(text, password):
+            # Para este ejemplo, aceptamos cualquier combinación
+            session['logged_in'] = True
+            session['user_email'] = text
+            
+            # Redirigir al dashboard después de un login exitoso
+            return redirect(url_for('dashboard'))
     
     # Si es GET, simplemente mostramos la página de login
     return render_template('login.html')

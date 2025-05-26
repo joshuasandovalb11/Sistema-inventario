@@ -102,8 +102,8 @@ def get_all_providers():
         finally:
             close_db_connection(conn, cur)
 
+# Función dedicada para obtener todos los productos activos (sin paginación) para usar en formularios o reportes
 def get_all_products():
-    """Obtiene todos los productos sin paginación para usar en formularios"""
     conn, cur = get_db_connection()
     if conn is None:
         return []
@@ -152,6 +152,7 @@ def edit_provider(provider_id, provider_name, provider_email, provider_phone):
         finally:
             close_db_connection(conn, cur)
 
+# Función para eliminar un proveedor de la base de datos
 def delete_provider(provider_id):
     conn, cur = get_db_connection()
     if conn is None:
@@ -163,7 +164,6 @@ def delete_provider(provider_id):
         cur.execute('DELETE FROM proveedores WHERE "idProveedor" = %s', (provider_id,))
         conn.commit()
         print("Proveedor eliminado exitosamente")
-        # return "Proveedor eliminado exitosamente", 200
         close_db_connection(conn, cur)
 
 def add_product(provider, productName, priceBuy, priceSell, packageQuantity, quantity, isActive):
@@ -289,10 +289,12 @@ def sell_product(product_id, quantity):
         print("Conexión exitosa a la base de datos")
         fecha = date.today()
         try:
+            # Obtener el precio del producto
             cur.execute('SELECT "precioVenta" FROM productos WHERE "idProducto" = %s', (product_id,))
             price = cur.fetchone()[0]
             total = int(price) * int(quantity)  
-            # Insertar el nuevo producto en la tabla products
+
+            # Insertar una nueva venta y retornar el ID de esta.
             cur.execute("""
                 INSERT INTO ventas (fecha, total)
                 VALUES (%s, %s)
@@ -301,10 +303,20 @@ def sell_product(product_id, quantity):
             venta_id = cur.fetchone()[0]
             conn.commit()
 
+            # Insertar los detalles de la venta de la venta recien hecha
             cur.execute("""
                 INSERT INTO "detalleVenta" ("idProducto", "idVenta", cantidad)
                 VALUES (%s, %s, %s)
             """, (product_id, venta_id, quantity,))
+
+            conn.commit()
+
+            # Actualizar inventario (restar cantidad)
+            cur.execute("""
+                UPDATE productos
+                SET cantidad = cantidad - %s
+                WHERE "idProducto" = %s
+            """, (quantity, product_id))
 
             conn.commit()
             print("Producto vendido exitosamente")

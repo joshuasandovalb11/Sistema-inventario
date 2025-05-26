@@ -1,4 +1,6 @@
 import re
+
+import bcrypt
 from app.static.db.connection import get_db_connection, close_db_connection
 
 def validar_datos_proveedor(nombre, correo, telefono):
@@ -35,7 +37,7 @@ def validar_campos_numericos(priceBuy, priceSell, packageQuantity, quantity):
     return True, "Campos válidos"
 
 def validar_nombre(nombre):
-    # Permitir letras (con acentos y ñ), números y espacios, pero no signos
+    # Patrón diseñado para permitir en el nombre solo letras, números y espacios
     if not re.fullmatch(r"[A-Za-zÁÉÍÓÚÑáéíóúñ0-9\s]+", nombre):
         return False, "El nombre solo debe contener letras, números y espacios"
 
@@ -45,7 +47,7 @@ def validar_nombre(nombre):
 
 def proveedor_existe(provider_id):
     try:
-        conn,cur = get_db_connection()  # o psycopg2.connect(...) si no tienes función
+        conn,cur = get_db_connection()
         
         cur.execute('SELECT * FROM proveedores WHERE "idProveedor" = %s', (provider_id,))
         resultado = cur.fetchone()
@@ -66,8 +68,8 @@ def validar_cantidad_venta(product_id, cantidad):
     except (ValueError, TypeError):
         return False, "La cantidad debe ser un número entero válido"
 
-    if cantidad <= 0:
-        return False, "La cantidad debe ser un número entero mayor a 0"
+    if cantidad <= 1:
+        return False, "La cantidad debe ser un número entero mayor a 1"
 
     conn, cur = get_db_connection()
     if conn is None:
@@ -86,5 +88,57 @@ def validar_cantidad_venta(product_id, cantidad):
         return True, "Cantidad válida"
     except Exception as e:
         return False, f"Error al validar cantidad: {str(e)}"
+    finally:
+        close_db_connection(conn, cur)
+
+# Funcion para validar si un producto existe en la base de datos
+def existe_producto(product_name):
+    try:
+        conn, cur = get_db_connection()
+        if conn is None:
+            return False, "Error al conectar a la base de datos"
+        
+        product_name = product_name.lower()  
+        cur.execute('SELECT * FROM productos WHERE "nombre" = %s', (product_name,))
+        resultado = cur.fetchone()
+
+        close_db_connection(conn, cur)
+
+        if resultado is None:
+            return True, "Producto válido."
+        else:
+            return False, "El producto ya existe."
+    except Exception as e:
+        return False, f"Error al validar el producto: {e}"
+    finally:
+        if conn:
+            close_db_connection(conn, cur)
+
+def validar_login(user, password):
+    conn, cur = get_db_connection()
+    if conn is None:
+        print("Error al conectar a la base de datos")
+        return False
+
+    try:
+        # Buscar usuario por nombre
+        cur.execute('SELECT * FROM admin WHERE "user" = %s', (user,))
+        resultado = cur.fetchone()
+
+        if resultado is None:
+            return False
+
+        hashed_password_db = resultado[1]
+
+        # Verificamos contraseña
+        if bcrypt.checkpw(password.encode('utf-8'), hashed_password_db.encode('utf-8')):
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        print("Error durante la validación:", e)
+        return False
+
     finally:
         close_db_connection(conn, cur)
