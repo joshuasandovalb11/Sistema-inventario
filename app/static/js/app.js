@@ -192,7 +192,7 @@ function addPaginationAttributes() {
     });
 }
 
-// FUNCIÓN PRINCIPAL PARA CARGAR CONTENIDO - SOLO UNA VERSIÓN
+// Funcion para cargar contenido de una página específica
 async function loadContent(pageName, pageNumber = 1) {
     console.log(`loadContent llamado con: ${pageName}, página: ${pageNumber}`);
     console.log(`Estado actual: currentPage=${currentPage}, currentPageNumber=${currentPageNumber}`);
@@ -202,7 +202,7 @@ async function loadContent(pageName, pageNumber = 1) {
         return loadPageWithPagination(pageName, pageNumber);
     }
     
-    // CONDICIÓN CORREGIDA: Solo evitar recarga si es exactamente la misma página Y ya hay contenido Y no es recarga inicial
+    // Solo evitar recarga si es exactamente la misma página Y ya hay contenido Y no es recarga inicial
     if (pageName === currentPage && 
         pageNumber === currentPageNumber && 
         contentArea.innerHTML !== '' && 
@@ -368,7 +368,7 @@ window.addEventListener('popstate', (event) => {
     }
 });
 
-// FUNCIÓN PARA VERIFICAR Y REDIRIGIR AL HASH CORRECTO
+// Funcion para verificar y redirigir al hash
 function ensureHashRoute() {
     // Si no hay hash en la URL, redirigir a #dashboard
     if (!window.location.hash || window.location.hash === '#') {
@@ -379,7 +379,7 @@ function ensureHashRoute() {
     return false; // No se hizo redirección
 }
 
-// INICIALIZACIÓN PRINCIPAL - CORREGIDA CON REDIRECCIÓN AUTOMÁTICA
+// Inicialización principal
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded - Iniciando aplicación');
     console.log('URL actual:', window.location.href);
@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     initializePagination();
 
-    // VERIFICAR Y REDIRIGIR SI ES NECESARIO
+    // Verificar y redirigir al hash si es necesario
     const wasRedirected = ensureHashRoute();
     
     if (wasRedirected) {

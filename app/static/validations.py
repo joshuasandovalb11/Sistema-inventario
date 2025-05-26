@@ -68,8 +68,8 @@ def validar_cantidad_venta(product_id, cantidad):
     except (ValueError, TypeError):
         return False, "La cantidad debe ser un número entero válido"
 
-    if cantidad <= 1:
-        return False, "La cantidad debe ser un número entero mayor a 1"
+    if cantidad < 1:
+        return False, "La cantidad debe ser un número entero 1 o mayor"
 
     conn, cur = get_db_connection()
     if conn is None:

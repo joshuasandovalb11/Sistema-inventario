@@ -153,22 +153,22 @@ def existe_producto_ref(product_name):
         
 
 def principal():
-    # proveedor_existe(14)
+    proveedor_existe(14)
     proveedor_existe_ref(14)
 
-    # validar_nombre("Juan Pérez")
+    validar_nombre("Juan Pérez")
     validar_nombre_ref("Juan Pérez")
 
-    # productos = get_all_products()
+    productos = get_all_products()
     productos_ref = get_all_products_ref()
 
-    # existe_producto("Nike Blazer Mid")
+    existe_producto("Nike Blazer Mid")
     existe_producto_ref("Nike Blazer Mid")
 
-    # sell_product(27, 1)
+    sell_product(27, 1)
     sell_product_ref(27, 1)
 
-    # delete_provider(65)
+    delete_provider(65)
     delete_provider_ref(65)
     
 if __name__ == "__main__":

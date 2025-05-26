@@ -636,10 +636,10 @@ def validate_report_data():
         detalles_sin_producto = cur.fetchone()[0]
         
         if ventas_sin_detalle > 0:
-            print(f"⚠️  Advertencia: {ventas_sin_detalle} ventas sin detalles")
+            print(f"Advertencia: {ventas_sin_detalle} ventas sin detalles")
         
         if detalles_sin_producto > 0:
-            print(f"⚠️  Advertencia: {detalles_sin_producto} detalles con productos inválidos")
+            print(f"Advertencia: {detalles_sin_producto} detalles con productos inválidos")
         
         return ventas_sin_detalle == 0 and detalles_sin_producto == 0
         
